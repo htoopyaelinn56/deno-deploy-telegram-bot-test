@@ -18,11 +18,11 @@ Deno.serve(async (_req: Request) => {
     try {
       const update = await _req.json() as TelegramBot.Update;
 
-      bot.sendMessage(
+      await bot.sendMessage(
         update.message!.chat.id,
         "hello @" + update.message!.from!.username,
       );
-
+      console.info("Webhook", "Success sent message");
       return new Response("OK", { status: 200 });
     } catch (error) {
       console.error("Webhook", "Failed to process update", error);
