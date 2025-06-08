@@ -10,14 +10,25 @@ if (import.meta.main) {
 Deno.serve((_req) => {
   const url = new URL(_req.url);
 
-  console.log("Request received:", url.pathname, url.search);
+  console.log("Request received:", url.searchParams.toString());
+
+  const input = url.searchParams.get("input");
+
+  if (!input) {
+    return new Response(
+      JSON.stringify({
+        message: "Invalid input!",
+        status: "error",
+        statusCode: 400,
+      }),
+    );
+  }
 
   const data = {
     message: "Hello from Deno!",
     timestamp: new Date().toISOString(),
     status: "success",
-    from: url.searchParams.get("from"),
-    to: url.searchParams.get("to"),
+    input: input,
   };
 
   return new Response(JSON.stringify(data), {
