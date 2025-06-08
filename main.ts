@@ -8,10 +8,14 @@ if (import.meta.main) {
 }
 
 Deno.serve((_req) => {
+  const url = new URL(_req.url);
+
   const data = {
     message: "Hello from Deno!",
     timestamp: new Date().toISOString(),
     status: "success",
+    from: url.searchParams.get("from"),
+    to: url.searchParams.get("to"),
   };
 
   return new Response(JSON.stringify(data), {
