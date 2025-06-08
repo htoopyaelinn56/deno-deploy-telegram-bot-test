@@ -14,9 +14,7 @@ const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 
 Deno.serve(async (_req: Request) => {
   console.log("Received request:", _req.method, _req.url);
-  if (
-    _req.method === "POST" && _req.url.includes("/webhook")
-  ) {
+  if (_req.method === "POST") {
     try {
       const update = await _req.json() as TelegramBot.Update;
 
