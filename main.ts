@@ -7,35 +7,29 @@ if (import.meta.main) {
   console.log("Add 2 + 3 =", add(2, 3));
 }
 
-Deno.serve((_req) => {
-  const url = new URL(_req.url);
+import TelegramBot from "node-telegram-bot-api";
 
-  console.log("Request received:", url.searchParams.toString());
+const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 
-  const input = url.searchParams.get("input");
+Deno.serve(async (_req: Request) => {
+  console.log("Received request:", _req.method, _req.url);
+  if (
+    _req.method === "POST" && _req.url.includes("/webhook")
+  ) {
+    try {
+      const update = await _req.json() as TelegramBot.Update;
 
-  if (!input) {
-    return new Response(
-      JSON.stringify({
-        message: "Invalid input!",
-        status: "error",
-        statusCode: 400,
-      }),
-    );
+      bot.sendMessage(
+        update.message!.chat.id,
+        "hello @" + update.message!.from!.username,
+      );
+
+      return new Response("OK", { status: 200 });
+    } catch (error) {
+      console.error("Webhook", "Failed to process update", error);
+      return new Response("Error processing update", { status: 500 });
+    }
   }
-
-  const data = {
-    message: "Hello from Deno!",
-    timestamp: new Date().toISOString(),
-    status: "success",
-    input: input,
-  };
-
-  return new Response(JSON.stringify(data), {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    status: 200,
-    statusText: "OK",
-  });
+  return new Response("Not found", { status: 404 });
 });
