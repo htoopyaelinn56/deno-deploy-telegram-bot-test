@@ -8,5 +8,17 @@ if (import.meta.main) {
 }
 
 Deno.serve((_req) => {
-  return new Response("Hello, Deno!");
+  const data = {
+    message: "Hello from Deno!",
+    timestamp: new Date().toISOString(),
+    status: "success",
+  };
+
+  return new Response(JSON.stringify(data), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    status: 200,
+    statusText: "OK",
+  });
 });
