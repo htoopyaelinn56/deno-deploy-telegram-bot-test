@@ -10,6 +10,8 @@ if (import.meta.main) {
 Deno.serve((_req) => {
   const url = new URL(_req.url);
 
+  console.log("Request received:", url.pathname, url.search);
+
   const data = {
     message: "Hello from Deno!",
     timestamp: new Date().toISOString(),
