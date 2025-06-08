@@ -20,7 +20,7 @@ Deno.serve(async (_req: Request) => {
 
       await bot.sendMessage(
         update.message!.chat.id,
-        "hello @" + update.message!.from!.username,
+        "hello @" + update.message!.from!.username + "!\nHow are you?",
       );
       console.info("Webhook", "Success sent message");
       return new Response("OK", { status: 200 });
