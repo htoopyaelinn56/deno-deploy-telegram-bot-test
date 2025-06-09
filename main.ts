@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import { GoogleGenAI } from "@google/genai";
+import { Chat, GoogleGenAI } from "@google/genai";
 
 const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
@@ -16,8 +16,9 @@ Deno.serve(async (_req: Request) => {
       try {
         const response = await ai.models.generateContent({
           model: "gemini-2.5-flash-preview-05-20",
-          contents: `${update.message!
-            .text!}\nExtract from and to location in json format. I want to use it for navigation. Provide only json response in array, because there is multiple destinations which means you have to take multiple bus routes. example response is [{\"from\" : \"a\",\"to\" : \"b\"}`,
+          contents: `message = ${
+            update.message!.text
+          }. If the user message is asking about navigation, Extract from and to location in json format. I want to use it for navigation. Provide only json response in array, because there is multiple destinations which means you have to take multiple bus routes. example response is {\"route_plan\" : [{\"from\" : \"a\",\"to\" : \"b\"},],\"navigation\" : true or false, \"message\" : \"reply_messsage\"}. navigation field will be true if user ask about navigation else false, message field will be reply user's prompt appropriately in the language they asked. the message filed will be null, if the message is about navigation.`,
           config: {
             maxOutputTokens: 65536,
           },
