@@ -1,11 +1,21 @@
 import TelegramBot from "node-telegram-bot-api";
-import { Chat, GoogleGenAI } from "@google/genai";
-import { connect } from "node:http2";
+import { GoogleGenAI } from "@google/genai";
 
 const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+interface RouteSegment {
+  from: string;
+  to: string;
+}
+
+interface TravelPlan {
+  route_plan: RouteSegment[];
+  navigation: boolean;
+  message: string | null;
+}
 
 Deno.serve(async (_req: Request) => {
   console.log("Received request:", _req.method, _req.url);
@@ -27,10 +37,27 @@ Deno.serve(async (_req: Request) => {
 
         console.info("Webhook", "Response from Gemini:", response.text);
 
+        const formattedJsonStringResponse = response.text!.replace(
+          /^```json\n/,
+          "",
+        )
+          .replace(
+            /\n```$/,
+            "",
+          );
+
+        const travelPlan: TravelPlan = JSON.parse(formattedJsonStringResponse);
         await bot.sendChatAction(update.message!.chat.id, "typing");
+        let responseText = "";
+        if (travelPlan.message == null) {
+          responseText =
+            "Navigation အတွက်က development လုပ်နေတုန်းမလို့ နောက်မှ မေးပါခင်ဗျာ။";
+        } else {
+          responseText = travelPlan.message;
+        }
         await bot.sendMessage(
           update.message!.chat.id,
-          response.text!,
+          responseText,
         );
       } catch (sendError) {
         console.error("Failed to send message to user:", sendError);
