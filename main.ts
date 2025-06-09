@@ -1,5 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import { Chat, GoogleGenAI } from "@google/genai";
+import { connect } from "node:http2";
 
 const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
@@ -23,6 +24,9 @@ Deno.serve(async (_req: Request) => {
             maxOutputTokens: 65536,
           },
         });
+
+        console.info("Webhook", "Response from Gemini:", response.text);
+
         await bot.sendChatAction(update.message!.chat.id, "typing");
         await bot.sendMessage(
           update.message!.chat.id,
