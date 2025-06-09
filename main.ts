@@ -17,11 +17,12 @@ Deno.serve(async (_req: Request) => {
         const response = await ai.models.generateContent({
           model: "gemini-2.5-flash-preview-05-20",
           contents: `${update.message!
-            .text!}. Parse from and to from this message and send the response of you want to go from place to to place in burmese language. if not input send input is invalid in burmese language.`,
+            .text!}\nExtract from and to location in json format. I want to use it for navigation. Provide only json response in array, because there is multiple destinations which means you have to take multiple bus routes. example response is [{\"from\" : \"a\",\"to\" : \"b\"}`,
           config: {
             maxOutputTokens: 65536,
           },
         });
+        await bot.sendChatAction(update.message!.chat.id, "typing");
         await bot.sendMessage(
           update.message!.chat.id,
           response.text!,
