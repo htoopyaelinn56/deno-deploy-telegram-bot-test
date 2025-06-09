@@ -13,36 +13,25 @@ Deno.serve(async (_req: Request) => {
       const update = await _req.json() as TelegramBot.Update;
       await bot.sendChatAction(update.message!.chat.id, "typing");
 
-      let responseText: string;
-
       try {
         const response = await ai.models.generateContent({
           model: "gemini-2.5-flash-preview-05-20",
-          contents: update.message!.text!,
+          contents: `${update.message!
+            .text!}. Parse from and to from this message and send the response of you want to go from place to to place in burmese language. if not input send input is invalid in burmese language.`,
+          config: {
+            maxOutputTokens: 65536,
+          },
         });
-        responseText = response.text!;
-      } catch (apiError) {
-        console.error("AI API Error:", apiError);
-        responseText =
-          "❌ Sorry, I'm having trouble processing your request right now. Please try again later.";
-      }
-
-      try {
         await bot.sendMessage(
           update.message!.chat.id,
-          responseText,
+          response.text!,
         );
       } catch (sendError) {
         console.error("Failed to send message to user:", sendError);
-        // Try to send a simpler error message
-        try {
-          await bot.sendMessage(
-            update.message!.chat.id,
-            "❌ An error occurred while processing your message.",
-          );
-        } catch (finalError) {
-          console.error("Failed to send error message:", finalError);
-        }
+        await bot.sendMessage(
+          update.message!.chat.id,
+          "❌ An error occurred while generating response.",
+        );
       }
       console.info("Webhook", "Success sent message");
       return new Response("OK", { status: 200 });
