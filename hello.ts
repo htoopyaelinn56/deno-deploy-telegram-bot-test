@@ -1,6 +1,6 @@
 Deno.serve((_req: Request) => {
   return new Response(JSON.stringify({
-    "message": "Hello, world!",
+    "message": "Hello, world! ❤️",
     "status": "success",
   }));
 });
