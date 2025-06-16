@@ -14,7 +14,6 @@ interface RouteSegment {
 interface TravelPlan {
   route_plan: RouteSegment[];
   navigation: boolean;
-  message: string | null;
 }
 
 Deno.serve(async (_req: Request) => {
@@ -29,7 +28,12 @@ Deno.serve(async (_req: Request) => {
           model: "gemini-2.5-flash-preview-05-20",
           contents: `message = ${
             update.message!.text
-          }. If the user message is asking about navigation, Extract from and to location in json format. I want to use it for navigation. Provide only json response in array, because there is multiple destinations which means you have to take multiple bus routes. example response is {\"route_plan\" : [{\"from\" : \"a\",\"to\" : \"b\"},],\"navigation\" : true or false, \"message\" : \"reply_messsage\"}. navigation field will be true if user ask about navigation else false, message field will be reply user's prompt appropriately in the language they asked. the message filed will be null, if the message is about navigation.`,
+          }. If the user message is asking about navigation, 
+          Extract from and to location in json format. I want to use it for navigation. 
+          Provide only json response in array, because there is multiple destinations 
+          which means you have to take multiple bus routes. example response is 
+          {\"route_plan\" : [{\"from\" : \"a\",\"to\" : \"b\"},],\"navigation\" : true or false}. 
+          navigation field will be true if user ask about navigation else false.`,
           config: {
             maxOutputTokens: 65536,
           },
@@ -48,8 +52,8 @@ Deno.serve(async (_req: Request) => {
 
         const travelPlan: TravelPlan = JSON.parse(formattedJsonStringResponse);
         await bot.sendChatAction(update.message!.chat.id, "typing");
-        let responseText = "";
-        if (travelPlan.message == null) {
+        let responseText: string;
+        if (travelPlan.navigation) {
           // convert travelPlan to json
           responseText = JSON.stringify(
             travelPlan.route_plan,
@@ -57,7 +61,7 @@ Deno.serve(async (_req: Request) => {
             2,
           );
         } else {
-          responseText = travelPlan.message;
+          responseText = "လမ်းကြောင်းပဲသိတာမလို့ တခြားဟာတွေ မမေးပါနဲ့ဗျာ။🥲";
         }
         await bot.sendMessage(
           update.message!.chat.id,
