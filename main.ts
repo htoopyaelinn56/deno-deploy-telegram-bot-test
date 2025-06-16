@@ -28,12 +28,13 @@ Deno.serve(async (_req: Request) => {
           model: "gemini-2.5-flash-preview-05-20",
           contents: `message = ${
             update.message!.text
-          }. If the user message is asking about navigation, 
+          }. You are a navigator bot. If the user message is asking about navigation, 
           Extract from and to location in json format. I want to use it for navigation. 
           Provide only json response in array, because there is multiple destinations 
           which means you have to take multiple bus routes. example response is 
           {\"route_plan\" : [{\"from\" : \"a\",\"to\" : \"b\"},],\"navigation\" : true or false}. 
-          navigation field will be true if user ask about navigation else false.`,
+          navigation field will be true if user ask about navigation else false. append unicodes
+          to the values in json response.`,
           config: {
             maxOutputTokens: 65536,
           },
