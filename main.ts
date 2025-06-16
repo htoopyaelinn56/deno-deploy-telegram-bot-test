@@ -50,8 +50,12 @@ Deno.serve(async (_req: Request) => {
         await bot.sendChatAction(update.message!.chat.id, "typing");
         let responseText = "";
         if (travelPlan.message == null) {
-          responseText =
-            "Navigation အတွက်က development လုပ်နေတုန်းမလို့ နောက်မှ မေးပါခင်ဗျာ။";
+          // convert travelPlan to json
+          responseText = JSON.stringify(
+            travelPlan.route_plan,
+            null,
+            2,
+          );
         } else {
           responseText = travelPlan.message;
         }
