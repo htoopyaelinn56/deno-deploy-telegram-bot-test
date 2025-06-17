@@ -33,8 +33,7 @@ Deno.serve(async (_req: Request) => {
           Provide only json response in array, because there is multiple destinations 
           which means you have to take multiple bus routes. example response is 
           {\"route_plan\" : [{\"from\" : \"a\",\"to\" : \"b\"},],\"navigation\" : true or false}.
-          where a and b are locations. navigation field will be true if user ask about navigation else false. append unicodes
-          to the values in json response.`,
+          where a and b are locations. navigation field will be true if user ask about navigation else false.`,
           config: {
             maxOutputTokens: 65536,
           },
