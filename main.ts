@@ -27,7 +27,7 @@ Deno.serve(async (_req: Request) => {
         const response = await ai.models.generateContent({
           model: "gemini-2.5-flash-preview-05-20",
           contents: `message = ${
-            update.message!.text
+              replace_characters(update.message!.text!.trim())
           }. You are a navigator bot. If the user message is asking about navigation, 
           Extract from and to location in json format. I want to use it for navigation. 
           Provide only json response in array, because there is multiple destinations 
@@ -85,3 +85,15 @@ Deno.serve(async (_req: Request) => {
   }
   return new Response("Not found", { status: 404 });
 });
+
+// function to replace characters in a string
+function replace_characters(
+  str: string,
+): string {
+  const replacements: Record<string, string> = {
+    "၀": "ဝ",
+    "ဦ": "ဦ",
+    "စျ": "ဈ",
+  };
+  return str.split("").map((char) => replacements[char] || char).join("");
+}
