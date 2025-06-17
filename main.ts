@@ -37,8 +37,8 @@ Deno.serve(async (_req: Request) => {
           Extract from and to location in json format. I want to use it for navigation. 
           Provide only json response in array, because there is multiple destinations 
           which means you have to take multiple bus routes. example response is 
-          {\"route_plan\" : [{\"from\" : \"a\",\"to\" : \"b\"},],\"navigation\" : true or false}. 
-          navigation field will be true if user ask about navigation else false. append unicodes
+          {\"route_plan\" : [{\"from\" : \"a\",\"to\" : \"b\"},],\"navigation\" : true or false}.
+          where a and b are locations. navigation field will be true if user ask about navigation else false. append unicodes
           to the values in json response.`,
           config: {
             maxOutputTokens: 65536,
@@ -62,18 +62,19 @@ Deno.serve(async (_req: Request) => {
 
         if (travelPlan.navigation) {
           // convert travelPlan to json
-          const modifiedRoutePlan: RouteSegmentWithCodePoints[] = travelPlan.route_plan.map(segment => {
-            return {
-              ...segment, // Copy existing from and to properties
-              from_codepoint: getCodePointsString(segment.from),
-              to_codepoint: getCodePointsString(segment.to),
-            };
-          });
+          const modifiedRoutePlan: RouteSegmentWithCodePoints[] = travelPlan
+            .route_plan.map((segment) => {
+              return {
+                ...segment, // Copy existing from and to properties
+                from_codepoint: getCodePointsString(segment.from),
+                to_codepoint: getCodePointsString(segment.to),
+              };
+            });
 
           responseText = JSON.stringify(
-              modifiedRoutePlan,
-              null,
-              2,
+            modifiedRoutePlan,
+            null,
+            2,
           );
         } else {
           responseText = "လမ်းကြောင်းပဲသိတာမလို့ တခြားဟာတွေ မမေးပါနဲ့ဗျာ။🥲";
@@ -104,5 +105,5 @@ function getCodePointsString(input: string): string {
     return ""; // Return an empty string for empty input
   }
   // Get code points for each character and join them with a comma
-  return Array.from(input).map(char => char.codePointAt(0)).join(',');
+  return Array.from(input).map((char) => char.codePointAt(0)).join(",");
 }
