@@ -90,10 +90,8 @@ Deno.serve(async (_req: Request) => {
 function replace_characters(
   str: string,
 ): string {
-  const replacements: Record<string, string> = {
-    "၀": "ဝ",
-    "ဦ": "ဦ",
-    "စျ": "ဈ",
-  };
-  return str.split("").map((char) => replacements[char] || char).join("");
+    return str
+        .replace("၀", "ဝ") // Escape double quotes
+        .replace("စျ", "ဈ")
+        .replace("ဦ", "ဦ");
 }
