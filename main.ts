@@ -11,6 +11,11 @@ interface RouteSegment {
   to: string;
 }
 
+interface RouteSegmentWithCodePoints extends RouteSegment {
+  from_codepoint: string;
+  to_codepoint: string;
+}
+
 interface TravelPlan {
   route_plan: RouteSegment[];
   navigation: boolean;
@@ -54,12 +59,21 @@ Deno.serve(async (_req: Request) => {
         const travelPlan: TravelPlan = JSON.parse(formattedJsonStringResponse);
         await bot.sendChatAction(update.message!.chat.id, "typing");
         let responseText: string;
+
         if (travelPlan.navigation) {
           // convert travelPlan to json
+          const modifiedRoutePlan: RouteSegmentWithCodePoints[] = travelPlan.route_plan.map(segment => {
+            return {
+              ...segment, // Copy existing from and to properties
+              from_codepoint: getCodePointsString(segment.from),
+              to_codepoint: getCodePointsString(segment.to),
+            };
+          });
+
           responseText = JSON.stringify(
-            travelPlan.route_plan,
-            null,
-            2,
+              modifiedRoutePlan,
+              null,
+              2,
           );
         } else {
           responseText = "လမ်းကြောင်းပဲသိတာမလို့ တခြားဟာတွေ မမေးပါနဲ့ဗျာ။🥲";
@@ -84,3 +98,11 @@ Deno.serve(async (_req: Request) => {
   }
   return new Response("Not found", { status: 404 });
 });
+
+function getCodePointsString(input: string): string {
+  if (!input) {
+    return ""; // Return an empty string for empty input
+  }
+  // Get code points for each character and join them with a comma
+  return Array.from(input).map(char => char.codePointAt(0)).join(',');
+}
