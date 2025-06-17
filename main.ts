@@ -91,7 +91,7 @@ function replace_characters(
   str: string,
 ): string {
     return str
-        .replace("၀", "ဝ") // Escape double quotes
+        .replace("၀", "ဝ")
         .replace("စျ", "ဈ")
         .replace("ဦ", "ဦ");
 }
